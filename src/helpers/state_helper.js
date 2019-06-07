@@ -1,36 +1,36 @@
 
 function initializeState() {
     const currentState = {
-        "type" : "update",
-        "currentTemperature": 0,
-        "desiredTemperature": 0,
-        "engine1Direction": 1,
-        "engine1Speed": 0,
-        "engine2Direction": 1,
-        "engine2Speed": 0,
+        type : "update",
+        currentTemperature: 0,
+        desiredTemperature: 0,
+        engine1Direction: 1,
+        engine1Speed: 0,
+        engine2Direction: 1,
+        engine2Speed: 0,
       };
       
     const status = {
-        "type" : "status",
-        "autoProgram": false,
-        "connectedToEngines" : false,
-        "connectedToHardwareController" : false
+        type: "status",
+        autoProgram: false,
+        connectedToEngines : false,
+        connectedToHardwareController : false
       };
        
     const elongation = {
-        "type" : "elongation",
-        "leftLength" : 0,
-        "rightLength": 0,
+        type: "elongation",
+        leftLength: 0,
+        rightLength: 0,
       };
 
     const reel = {
-        "type" : "reel",
-        "diameter" : 0.1
+        type: "reel",
+        diameter: 0.1
       };
 
     const autoProgram = {        
-        "type" : "autoProgram",
-        "steps" : [], 
+        type: "autoProgram",
+        steps: [], 
       };
 
     return {

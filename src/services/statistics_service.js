@@ -6,6 +6,10 @@ function getTime() {
 } 
 
 function updatesDifferent (oldUpdate, newUpdate){
+    if (!oldUpdate) {
+        return true;
+    }
+
     if ((oldUpdate.engine1Speed !== newUpdate.engine1Speed)
         || (oldUpdate.engine2Speed !== newUpdate.engine2Speed)
         || (oldUpdate.currentTemperature !== newUpdate.currentTemperature && Math.abs(oldUpdate.currentTemperature - newUpdate.currentTemperature) > 10)) {   
@@ -22,24 +26,23 @@ function speedsZero(update) {
     return false;
 }
   
-let lastStatistics = {};
+let lastStatistics = null;
 let sessionStarted = false;
-let sessionStart = {};
+let sessionStart = {}; 
 
 async function handleUpdate(update) {
     try {
-
-        let statistics = update;
-    
-        console.log(statistics);
+ 
+        let statistics = update; 
         statistics.time = getTime(); 
     
         if (updatesDifferent(lastStatistics, statistics)) { 
+            if (lastStatistics) await db.saveStatistics(lastStatistics);
             await db.saveStatistics(statistics);
             lastStatistics = statistics; 
-            console.log('Statistics update saved'); 
+            console.log('Statistics service :: Statistics update saved'); 
         } else {
-            console.log('Updates the same, skipping saving');
+            console.log('Statistics service :: Updates the same, skipping saving');
         }
     
         if (speedsZero(statistics)) {
@@ -50,17 +53,17 @@ async function handleUpdate(update) {
                 }
                 sessionStarted = false;
                 db.saveSession(endedSession);
-                console.log('Ending session');
+                console.log('Statistics service :: Ending session');
             }
         } else {
             if (!sessionStarted) {
                 sessionStart = getTime();
                 sessionStarted = true;
-                console.log('Starting session');
+                console.log('Statistics service :: Starting session');
             }
         }
     } catch(error) { 
-        console.log(error); 
+        console.log('Statistics service :: ',error); 
     } 
 }    
 

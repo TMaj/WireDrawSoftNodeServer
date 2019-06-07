@@ -21,14 +21,14 @@ function calculateAndSendLengthUpdate() {
     currentElongationState.rightLength = currentElongationState.rightLength + extraRight; 
 
     process.send ({
-        "type" : "elongation",
-        "leftLength" : currentElongationState.leftLength,
-        "rightLength": currentElongationState.rightLength,
+        type: "elongation",
+        leftLength: currentElongationState.leftLength,
+        rightLength: currentElongationState.rightLength,
     });
 }
 
 function handleUpdate(update) { 
-    console.log('Elongation service: handling update');
+    console.log('Elongation service :: handling update');
     engine1Speed = update.engine1Speed;
     engine2Speed = update.engine2Speed;
 
@@ -41,13 +41,12 @@ function handleUpdate(update) {
         intervalSet = true;
         currentElongationState.leftLength = 0;
         currentElongationState.rightLength = 0; 
-        console.log('Setting interval');
-        intervalId = setInterval(calculateAndSendLengthUpdate, 2995);
-        console.log(intervalId);
+        console.log('Elongation service :: Setting interval');
+        intervalId = setInterval(calculateAndSendLengthUpdate, 2995); 
     } 
 
     if (update.engine1Speed == 0 && update.engine2Speed == 0) {
-        console.log('Elongation service: speeds are 0, stoppin');
+        console.log('Elongation service :: speeds are 0, stoppin');
         processOn = false;
         clearInterval(intervalId);
         intervalSet = false;

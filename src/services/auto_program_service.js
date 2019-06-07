@@ -11,19 +11,25 @@ function executeAutoProgram() {
 }
 
 function playAutoProgramStep() { 
-    process.send({
-        "type" : "update",
+    console.log('AutoProgram service :: Step');
+    const update = {
+        type : "update",
         ...steps[currentStepNo]
-    });
+    };
+
+    console.log(update);
+
+    process.send(update);
 
     currentStepNo++;
 
     if (currentStepNo >= steps.length) {
+       
         process.send({
             type: "update",
             engine1Speed: 0, 
             engine2Speed: 0, 
-            desiredTemperature: 0
+            desiredTemperature: 0,
         });
 
         process.send({
@@ -43,17 +49,16 @@ function cancelAutoProgramExecution() {
 }
 
 function handleAutoProgramChange(autoProgram) {
+    console.log('AutoProgram service :: received new steps');  
     cancelAutoProgramExecution();
     steps = autoProgram.steps;    
 }  
 
 function handleStatusChange(status) {
-    console.log('AutoProgram: received status');
-    console.log(status); 
-
+    console.log('AutoProgram service :: received status');  
      
     if (status.autoProgram) { 
-        console.log('AutoProgram: starting !'); 
+        console.log('AutoProgram service :: starting !'); 
     
         cancelAutoProgramExecution();
         executeAutoProgram();
@@ -61,7 +66,7 @@ function handleStatusChange(status) {
     }
 
     if (!status.autoProgram) {
-        console.log('AutoProgram: cancelling !');
+        console.log('AutoProgram service :: cancelling !');
         cancelAutoProgramExecution();
         return;
     } 
