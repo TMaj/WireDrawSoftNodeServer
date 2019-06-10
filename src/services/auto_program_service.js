@@ -11,18 +11,6 @@ function executeAutoProgram() {
 }
 
 function playAutoProgramStep() { 
-    console.log('AutoProgram service :: Step');
-    const update = {
-        type : "update",
-        ...steps[currentStepNo]
-    };
-
-    console.log(update);
-
-    process.send(update);
-
-    currentStepNo++;
-
     if (currentStepNo >= steps.length) {
        
         process.send({
@@ -39,8 +27,19 @@ function playAutoProgramStep() {
         
         return;
     }
+
+    console.log(`AutoProgram service :: Step no ${currentStepNo}`);
+    const update = {
+        type : "update",
+        ...steps[currentStepNo]
+    };
+
+    console.log(update);
+
+    process.send(update);
     
-    timeoutId = setTimeout(playAutoProgramStep, steps[currentStepNo].time * 1000)
+    currentStepNo++;
+    timeoutId = setTimeout(playAutoProgramStep, steps[currentStepNo - 1].time * 1000)
 }
 
 function cancelAutoProgramExecution() { 

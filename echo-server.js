@@ -19,7 +19,6 @@ const autoProgramService = fork(autoProgramServicePath, parameters, options);
 const statisticsService = fork(statisticsServicePath, parameters, options); 
 
 const wss = new WebSocket.Server({ port: 8080 });  
-const hardwareControllerId = 'wds-hardware-controller'; 
 const state = stateHelper.initializeState(); 
 
 // Broadcast to all.
@@ -40,6 +39,15 @@ wss.partialBroadcast = function(message, senderClient) {
   });
 }
 
+// Broadcast to all, except sender
+wss.sendToType = function(message, clientType) {
+  wss.clients.forEach(client => {
+    if (client.type === clientType && client.readyState === WebSocket.OPEN) { 
+      client.send(JSON.stringify(message));
+    }
+  });
+}
+
 elongationService.on('message', message => {
   const toSend = stateHelper.updateState(state, message);
   wss.broadcast(toSend);
@@ -47,7 +55,11 @@ elongationService.on('message', message => {
 
 autoProgramService.on('message', message => {
   const toSend = stateHelper.updateState(state, message);
-  wss.broadcast(toSend);
+  if (toSend.type === msgHelper.messageTypes.UPDATE) { 
+    wss.sendToType(toSend, msgHelper.socketTypes.HARDWARE);
+  } else { 
+    wss.broadcast(toSend);
+  }
 });  
 
 statisticsService.on('message', message => {
@@ -81,7 +93,12 @@ wss.on('connection', function connection(ws, req) {
       state.status.connectedToHardwareController = false;
       state.status.connectedToEngines = false; 
 
+      state.currentState.desiredTemperature = 0;
+      state.currentState.engine1Speed = 0;
+      state.currentState.engine2Speed =0;
+
       wss.broadcast(state.status);
+      wss.broadcast(state.currentState);
     });
   }
 

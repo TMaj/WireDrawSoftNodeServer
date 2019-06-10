@@ -6,6 +6,9 @@ const currentElongationState = {
 let engine1Speed = 0;
 let engine2Speed = 0;
 
+let engine1Direction = 0;
+let engine2Direction = 0;
+
 let reelDiameter = 0.1;  
 var intervalId;
 let intervalSet = false;
@@ -30,8 +33,18 @@ function calculateAndSendLengthUpdate() {
 function handleUpdate(update) { 
     console.log('Elongation service :: handling update');
     engine1Speed = update.engine1Speed;
-    engine2Speed = update.engine2Speed;
+    engine2Speed = update.engine2Speed; 
 
+    if (engine1Direction !== update.engine1Direction) {
+        currentElongationState.leftLength = 0;
+    }
+
+    if (engine2Direction !== update.engine2Direction) {
+        currentElongationState.rightLength = 0;
+    }
+
+    engine1Direction = update.engine1Direction;
+    engine2Direction = update.engine2Direction;
 
     if (update.engine1Speed != 0 && update.engine2Speed != 0) {
         processOn = true;
